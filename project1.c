@@ -1,7 +1,7 @@
-#define THRESHOLD 70 // light sensor threshold to find the black border line
-#define TOOFAR 25 // cm, range to look for objects within
+#define THRESHOLD 50 // light sensor threshold to find the black border line
+#define TOO_FAR 25 // cm, range to look for objects within
 #define FORWARD_TIME 3000 // ms, how long the robot should move after a full scan
-#define TIME_AFTER_EDGE 1000 // ms, how long the robot should move after detecting the border line and turning around
+#define TIME_AFTER_EDGE 3000 // ms, how long the robot should move after detecting the border line and turning around
 #define ERROR_TIME 4000 // ms, how much time to move forward before determining that checkEdge failed
 
 mutex theTalkingStick;
@@ -9,8 +9,8 @@ mutex theTalkingStick;
 // completes a 180 degree turn
 inline void turn_around()
 {
- OnRev(OUT_A, 25);
- OnFwd(OUT_C, 25); Wait(4000);
+ OnRev(OUT_A, 50);
+ OnFwd(OUT_C, 50); Wait(1400);
 }
 
 // this task removes an object from the arena if it is detected by the ultrasonic sensor
@@ -18,7 +18,7 @@ task scan()
 {
  while (true)
  {
-  if (SensorUS(IN_4) < TOOFAR) // object within range of sensor
+  if (SensorUS(IN_4) < TOO_FAR) // object within range of sensor
   {
    Acquire(theTalkingStick); // acquire mutex
    OnFwdSync(OUT_AC, 50, 0); // move toward object, slow enough to register black line
@@ -40,7 +40,7 @@ task checkEdge()
 {
  while (true)
  {
-  if (Sensor(IN_3) > THRESHOLD)
+  if (Sensor(IN_3) <= THRESHOLD)
   {
    Acquire(theTalkingStick);
    turn_around();
